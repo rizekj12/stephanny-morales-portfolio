@@ -1,0 +1,72 @@
+{
+  "es": {
+    "specialty": "Especialista en Estética Dental y Médica",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "instagramLabel": "Instagram",
+    "tiktokLabel": "TikTok",
+    "whatsappLabel": "WhatsApp",
+    "dentalCardLabel": "Servicios Dentales",
+    "medicalCardLabel": "Servicios de Estética Médica",
+    "dental": {
+      "title": "Servicios de Estética Dental",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "items": [
+        "Blanqueamiento Dental",
+        "Carillas de Porcelana",
+        "Resinas y Composite Dental",
+        "Diseño de Sonrisa",
+        "Alineadores Transparentes",
+        "Coronas y Puentes Dentales",
+        "Contorneado de Encías"
+      ]
+    },
+    "medical": {
+      "title": "Servicios de Estética Médica",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "items": [
+        "Inyecciones de Bótox y Dysport",
+        "Relleno y Aumento de Labios",
+        "Contorno de Mejillas y Mandíbula",
+        "Tratamiento de Surcos Nasogenianos",
+        "Relleno de Ojeras",
+        "Rejuvenecimiento de la Piel",
+        "Tratamientos Antienvejecimiento"
+      ]
+    }
+  },
+  "en": {
+    "specialty": "Dental & Medical Aesthetics Specialist",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "instagramLabel": "Instagram",
+    "tiktokLabel": "TikTok",
+    "whatsappLabel": "WhatsApp",
+    "dentalCardLabel": "Dental Services",
+    "medicalCardLabel": "Medical Aesthetic Services",
+    "dental": {
+      "title": "Dental Aesthetic Services",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "items": [
+        "Teeth Whitening & Bleaching",
+        "Porcelain Veneers",
+        "Dental Bonding & Composite",
+        "Smile Design",
+        "Clear Aligners",
+        "Dental Crowns & Bridges",
+        "Gum Contouring"
+      ]
+    },
+    "medical": {
+      "title": "Medical Aesthetic Services",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "items": [
+        "Botox & Dysport Injections",
+        "Lip Fillers & Augmentation",
+        "Cheek & Jawline Contouring",
+        "Nasolabial Fold Treatment",
+        "Under-Eye Filler",
+        "Skin Rejuvenation",
+        "Anti-Aging Treatments"
+      ]
+    }
+  }
+}

@@ -1,18 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "./firebase";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CloseIcon from "@mui/icons-material/Close";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import translations from "./translations.json";
 import "./App.css";
+
+const dentalImages = [
+  "/images/dental/dental2.jpg",
+  "/images/dental/IMG_0602.png",
+  "/images/dental/IMG_1364.png",
+  "/images/dental/IMG_9815.png",
+  "/images/dental/IMG_9826.png",
+  "/images/dental/pic1.jpg",
+];
+
+const medicalImages = [
+  "/images/medical/facial_treatment.jpg",
+  "/images/medical/IMG_0060.jpg",
+  "/images/medical/IMG_9268.jpg",
+];
+
+function ImageCarousel({ images }) {
+  const [current, setCurrent] = useState(0);
+
+  const prev = () => setCurrent((i) => (i - 1 + images.length) % images.length);
+  const next = () => setCurrent((i) => (i + 1) % images.length);
+
+  return (
+    <Box sx={{ mb: 2.5 }}>
+      <Box sx={{ position: "relative", height: 210, borderRadius: "12px", overflow: "hidden", backgroundColor: "#131110" }}>
+        <Box
+          component="img"
+          src={images[current]}
+          alt={`foto ${current + 1}`}
+          sx={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", transition: "opacity 0.25s ease", }}
+        />
+
+        {/* Left arrow */}
+        <IconButton
+          onClick={prev}
+          size="small"
+          sx={{
+            position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)",
+            backgroundColor: "rgba(13,11,9,0.65)", color: "#C9A55A",
+            backdropFilter: "blur(4px)",
+            "&:hover": { backgroundColor: "rgba(13,11,9,0.9)", color: "#E0C880" },
+          }}
+        >
+          <ArrowBackIosNewIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+
+        {/* Right arrow */}
+        <IconButton
+          onClick={next}
+          size="small"
+          sx={{
+            position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+            backgroundColor: "rgba(13,11,9,0.65)", color: "#C9A55A",
+            backdropFilter: "blur(4px)",
+            "&:hover": { backgroundColor: "rgba(13,11,9,0.9)", color: "#E0C880" },
+          }}
+        >
+          <ArrowForwardIosIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+      </Box>
+
+      {/* Dot indicators */}
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, mt: 1.25 }}>
+        {images.map((_, i) => (
+          <Box
+            key={i}
+            onClick={() => setCurrent(i)}
+            sx={{
+              width: i === current ? 18 : 6,
+              height: 6,
+              borderRadius: "3px",
+              backgroundColor: i === current ? "#C9A55A" : "rgba(201,165,90,0.25)",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
+}
 
 const darkTheme = createTheme({
   palette: {
@@ -22,6 +107,9 @@ const darkTheme = createTheme({
 });
 
 function ServiceModal({ service, onClose }) {
+  const [displayed, setDisplayed] = useState(null);
+  useEffect(() => { if (service) setDisplayed(service); }, [service]);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Dialog
@@ -50,7 +138,7 @@ function ServiceModal({ service, onClose }) {
             pb: 1,
           }}
         >
-          {service?.title}
+          {displayed?.title}
           <IconButton
             aria-label="close"
             onClick={onClose}
@@ -67,20 +155,12 @@ function ServiceModal({ service, onClose }) {
         </DialogTitle>
 
         <DialogContent dividers sx={{ borderColor: "#2A2318" }}>
-          <Typography
-            variant="body2"
-            sx={{
-              color: "#F0E8D8",
-              lineHeight: 1.8,
-              mb: 2.5,
-              fontFamily: "'Segoe UI', system-ui, sans-serif",
-            }}
-          >
-            {service?.description}
-          </Typography>
+          {displayed?.images?.length > 0 && (
+            <ImageCarousel key={displayed.title} images={displayed.images} />
+          )}
 
           <List disablePadding>
-            {service?.items.map((item) => (
+            {displayed?.items?.map((item) => (
               <ListItem
                 key={item}
                 disableGutters
@@ -150,6 +230,17 @@ function WhatsAppIcon() {
 function App() {
   const [lang, setLang] = useState("es");
   const [activeModal, setActiveModal] = useState(null);
+  const [posts, setPosts] = useState(null);
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+    const unsub = onSnapshot(
+      q,
+      (snap) => setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setPosts([])
+    );
+    return unsub;
+  }, []);
 
   const t = translations[lang];
   const otherLang = lang === "es" ? "en" : "es";
@@ -223,7 +314,7 @@ function App() {
         <section className="services-section">
           <button
             className="service-card"
-            onClick={() => setActiveModal(t.dental)}
+            onClick={() => setActiveModal({ ...t.dental, images: dentalImages })}
           >
             <img src="/images/dental.jpg" alt={t.dentalCardLabel} />
             <div className="service-card-label">
@@ -233,13 +324,53 @@ function App() {
 
           <button
             className="service-card"
-            onClick={() => setActiveModal(t.medical)}
+            onClick={() => setActiveModal({ ...t.medical, images: medicalImages })}
           >
-            <img src="/images/facial_treatment.jpg" alt={t.medicalCardLabel} />
+            <img src="/images/medical/facial_treatment.jpg" alt={t.medicalCardLabel} />
             <div className="service-card-label">
               <span>{t.medicalCardLabel}</span>
             </div>
           </button>
+        </section>
+
+        <section className="news-section">
+          <h2 className="news-title">{t.newsTitle}</h2>
+
+          {posts === null && (
+            <div className="news-empty">
+              <div className="news-spinner" />
+            </div>
+          )}
+
+          {posts !== null && posts.length === 0 && (
+            <div className="news-empty">
+              <p>{t.newsEmpty}</p>
+            </div>
+          )}
+
+          {posts !== null && posts.length > 0 && (
+            <div className="news-list">
+              {posts.map((post) => (
+                <article key={post.id} className="news-card">
+                  {post.imageUrl && (
+                    <img src={post.imageUrl} alt={post.title} className="news-img" />
+                  )}
+                  <div className="news-body">
+                    {post.createdAt && (
+                      <time className="news-date">
+                        {post.createdAt.toDate().toLocaleDateString(
+                          lang === "es" ? "es-CO" : "en-US",
+                          { year: "numeric", month: "long", day: "numeric" }
+                        )}
+                      </time>
+                    )}
+                    <h3 className="news-card-title">{post.title}</h3>
+                    <p className="news-content">{post.content}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <a

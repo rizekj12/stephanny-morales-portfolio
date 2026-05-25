@@ -445,7 +445,7 @@ function App() {
               rel="noopener noreferrer"
             >
               <WhatsAppIcon />
-              <span>+57 350 710 5288</span>
+              <span>+57 350 710 5388</span>
             </a>
             <a
               href="mailto:Stephannymoralesalvarez@gmail.com"

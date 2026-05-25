@@ -63,7 +63,7 @@ function GalleryCarousel({ images }) {
     setTimeout(() => {
       setCurrent(idx);
       setFading(false);
-    }, 200);
+    }, 500);
   };
 
   const prev = (e) => { e.stopPropagation(); goTo((current - 1 + len) % len); };
@@ -80,7 +80,7 @@ function GalleryCarousel({ images }) {
       setTimeout(() => {
         setCurrent((c) => (c + 1) % len);
         setFading(false);
-      }, 200);
+      }, 500);
     }, 4000);
     return () => clearInterval(id);
   }, [len]);

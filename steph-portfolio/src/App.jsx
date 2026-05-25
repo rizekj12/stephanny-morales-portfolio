@@ -51,10 +51,12 @@ function Lightbox({ src, onClose }) {
   );
 }
 
-function GalleryCarousel() {
+function GalleryCarousel({ images }) {
   const [current, setCurrent] = useState(0);
   const [fading, setFading] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState(null);
+
+  const len = images.length;
 
   const goTo = (idx) => {
     setFading(true);
@@ -64,76 +66,54 @@ function GalleryCarousel() {
     }, 200);
   };
 
-  const prev = (e) => {
-    e.stopPropagation();
-    goTo((current - 1 + allGalleryImages.length) % allGalleryImages.length);
-  };
-  const next = (e) => {
-    e.stopPropagation();
-    goTo((current + 1) % allGalleryImages.length);
-  };
+  const prev = (e) => { e.stopPropagation(); goTo((current - 1 + len) % len); };
+  const next = (e) => { e.stopPropagation(); goTo((current + 1) % len); };
 
   useEffect(() => {
+    setCurrent(0);
+  }, [images]);
+
+  useEffect(() => {
+    if (len < 2) return;
     const id = setInterval(() => {
       setFading(true);
       setTimeout(() => {
-        setCurrent((c) => (c + 1) % allGalleryImages.length);
+        setCurrent((c) => (c + 1) % len);
         setFading(false);
       }, 200);
     }, 4000);
     return () => clearInterval(id);
-  }, []);
+  }, [len]);
+
+  if (len === 0) return null;
 
   return (
     <>
       <div className="gallery-carousel">
         <img
-          src={allGalleryImages[current]}
+          src={images[current]}
           alt={`Foto ${current + 1}`}
           className={`gallery-img${fading ? " gallery-img--fading" : ""}`}
-          onClick={() => setLightboxSrc(allGalleryImages[current])}
+          onClick={() => setLightboxSrc(images[current])}
         />
 
-        <button
-          className="gallery-arrow gallery-arrow--left"
-          onClick={prev}
-          aria-label="Anterior"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          >
+        <button className="gallery-arrow gallery-arrow--left" onClick={prev} aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <button
-          className="gallery-arrow gallery-arrow--right"
-          onClick={next}
-          aria-label="Siguiente"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          >
+        <button className="gallery-arrow gallery-arrow--right" onClick={next} aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
 
         <div className="gallery-dots">
-          {allGalleryImages.map((_, i) => (
+          {images.map((_, i) => (
             <button
               key={i}
               className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                goTo(i);
-              }}
+              onClick={(e) => { e.stopPropagation(); goTo(i); }}
               aria-label={`Foto ${i + 1}`}
             />
           ))}
@@ -380,6 +360,7 @@ function App() {
   const [lang, setLang] = useState("es");
   const [activeModal, setActiveModal] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [galleryImages, setGalleryImages] = useState(allGalleryImages);
 
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -387,6 +368,19 @@ function App() {
       q,
       (snap) => setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
       () => setPosts([]),
+    );
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, "gallery"), orderBy("createdAt", "asc"));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const items = snap.docs.map((d) => d.data().url);
+        setGalleryImages(items.length > 0 ? items : allGalleryImages);
+      },
+      () => {},
     );
     return unsub;
   }, []);
@@ -521,7 +515,7 @@ function App() {
           </button>
         </section>
 
-        <GalleryCarousel />
+        <GalleryCarousel images={galleryImages} />
 
         {posts === null && (
           <section className="news-section">

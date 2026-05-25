@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import {
   collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, serverTimestamp, query, orderBy,
 } from 'firebase/firestore'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
 import { db, auth, storage } from './firebase'
 
@@ -114,6 +114,10 @@ function Dashboard({ user }) {
   const [editUploadedFileName, setEditUploadedFileName] = useState('')
   const [deleteId, setDeleteId] = useState(null)
 
+  const [galleryItems, setGalleryItems]         = useState([])
+  const [galleryProgress, setGalleryProgress]   = useState(null)
+  const [galleryDeleteId, setGalleryDeleteId]   = useState(null)
+
   useEffect(() => {
     const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
     const unsub = onSnapshot(q, snap =>
@@ -140,6 +144,48 @@ function Dashboard({ user }) {
         setUploadProgress(null)
       }
     )
+  }
+
+  useEffect(() => {
+    const q = query(collection(db, 'gallery'), orderBy('createdAt', 'asc'))
+    const unsub = onSnapshot(q, snap =>
+      setGalleryItems(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+    )
+    return unsub
+  }, [])
+
+  const handleGalleryUpload = (e) => {
+    const files = Array.from(e.target.files)
+    if (!files.length) return
+    files.forEach(file => {
+      const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`)
+      const task = uploadBytesResumable(storageRef, file)
+      setGalleryProgress(0)
+      task.on('state_changed',
+        (snap) => setGalleryProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100)),
+        () => setGalleryProgress(null),
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref)
+          await addDoc(collection(db, 'gallery'), {
+            url,
+            storagePath: storageRef.fullPath,
+            name: file.name,
+            createdAt: serverTimestamp(),
+          })
+          setGalleryProgress(null)
+        }
+      )
+    })
+    e.target.value = ''
+  }
+
+  const handleGalleryDelete = async () => {
+    const item = galleryItems.find(g => g.id === galleryDeleteId)
+    if (item?.storagePath) {
+      try { await deleteObject(ref(storage, item.storagePath)) } catch {}
+    }
+    await deleteDoc(doc(db, 'gallery', galleryDeleteId))
+    setGalleryDeleteId(null)
   }
 
   const openEdit = (post) => {
@@ -353,6 +399,67 @@ function Dashboard({ user }) {
           </CardActions>
         </Card>
       ))}
+
+      {/* ── Gallery Section ── */}
+      <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 5, mb: 2, color: 'primary.main' }}>
+        Fotos del Carrusel ({galleryItems.length})
+      </Typography>
+
+      <Card sx={{ mb: 4, border: '1px solid', borderColor: 'primary.main' }}>
+        <CardContent>
+          <input
+            id="gallery-upload" type="file" accept="image/*" multiple
+            style={{ display: 'none' }} onChange={handleGalleryUpload}
+          />
+          <label htmlFor="gallery-upload">
+            <Button
+              component="span" variant="outlined" startIcon={<UploadIcon />}
+              disabled={galleryProgress !== null}
+            >
+              {galleryProgress !== null ? `Subiendo… ${galleryProgress}%` : 'Agregar fotos al carrusel'}
+            </Button>
+          </label>
+          {galleryProgress !== null && (
+            <LinearProgress variant="determinate" value={galleryProgress} sx={{ mt: 1, borderRadius: 4 }} />
+          )}
+        </CardContent>
+      </Card>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4 }}>
+        {galleryItems.map(item => (
+          <Box key={item.id} sx={{ position: 'relative', borderRadius: 2, overflow: 'hidden', border: '1px solid rgba(201,165,90,0.2)', aspectRatio: '1' }}>
+            <img src={item.url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <IconButton
+              size="small"
+              onClick={() => setGalleryDeleteId(item.id)}
+              sx={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'rgba(0,0,0,0.65)', color: '#c0392b', '&:hover': { backgroundColor: 'rgba(0,0,0,0.85)' } }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        ))}
+        {galleryItems.length === 0 && (
+          <Typography variant="body2" sx={{ color: 'text.secondary', gridColumn: '1/-1', textAlign: 'center', py: 2 }}>
+            No hay fotos en el carrusel aún.
+          </Typography>
+        )}
+      </Box>
+
+      {/* Gallery Delete Confirmation */}
+      <Dialog
+        open={!!galleryDeleteId} onClose={() => setGalleryDeleteId(null)}
+        maxWidth="xs" fullWidth
+        PaperProps={{ sx: { borderRadius: 3, backgroundColor: '#1C1915', border: '1px solid rgba(201,165,90,0.3)' } }}
+      >
+        <DialogTitle sx={{ color: '#C9A55A', fontWeight: 700, pb: 1 }}>¿Eliminar esta foto?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>Se eliminará del carrusel y no se puede deshacer.</Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button onClick={() => setGalleryDeleteId(null)} variant="outlined" color="primary">Cancelar</Button>
+          <Button onClick={handleGalleryDelete} variant="contained" sx={{ fontWeight: 700, backgroundColor: '#c0392b', '&:hover': { backgroundColor: '#a93226' } }}>Eliminar</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog

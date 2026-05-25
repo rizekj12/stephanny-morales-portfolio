@@ -147,6 +147,68 @@ function GalleryCarousel() {
   );
 }
 
+function PostCarousel({ posts, lang, emptyText, title }) {
+  const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
+  const items = posts.slice(0, 10);
+  const post = items[current];
+
+  const goTo = (idx) => {
+    setFading(true);
+    setTimeout(() => { setCurrent(idx); setFading(false); }, 180);
+  };
+
+  return (
+    <section className="news-section">
+      <h2 className="news-title">{title}</h2>
+      {items.length === 0 && (
+        <div className="news-empty"><p>{emptyText}</p></div>
+      )}
+      {items.length > 0 && (
+        <>
+          <article className={`post-card${fading ? " post-card--fading" : ""}`}>
+            {post.imageUrl && post.mediaType === "video" && (
+              <video src={post.imageUrl} className="news-img" controls playsInline />
+            )}
+            {post.imageUrl && post.mediaType !== "video" && (
+              <img src={post.imageUrl} alt={post.title} className="news-img" />
+            )}
+            <div className="post-card-body">
+              {post.createdAt && (
+                <time className="news-date">
+                  {post.createdAt.toDate().toLocaleDateString(
+                    lang === "es" ? "es-CO" : "en-US",
+                    { year: "numeric", month: "long", day: "numeric" }
+                  )}
+                </time>
+              )}
+              <h3 className="news-card-title">{post.title}</h3>
+              <p className="news-content">{post.content}</p>
+            </div>
+          </article>
+
+          {items.length > 1 && (
+            <div className="post-nav">
+              <button className="post-arrow" onClick={() => goTo((current - 1 + items.length) % items.length)} aria-label="Anterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+              <div className="gallery-dots" style={{ position: 'static', margin: '0 8px' }}>
+                {items.map((_, i) => (
+                  <button key={i} className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`} onClick={() => goTo(i)} aria-label={`Post ${i + 1}`} />
+                ))}
+              </div>
+              <button className="post-arrow" onClick={() => goTo((current + 1) % items.length)} aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+              </button>
+              <span className="post-counter">{current + 1} / {items.length}</span>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -404,51 +466,20 @@ function App() {
 
         <GalleryCarousel />
 
-        <section className="news-section">
-          <h2 className="news-title">{t.newsTitle}</h2>
-
-          {posts === null && (
-            <div className="news-empty">
-              <div className="news-spinner" />
-            </div>
-          )}
-
-          {posts !== null && posts.length === 0 && (
-            <div className="news-empty">
-              <p>{t.newsEmpty}</p>
-            </div>
-          )}
-
-          {posts !== null && posts.length > 0 && (
-            <div className="news-list">
-              {posts.map((post) => (
-                <article key={post.id} className="news-card">
-                  {post.imageUrl && (
-                    <img
-                      src={post.imageUrl}
-                      alt={post.title}
-                      className="news-img"
-                    />
-                  )}
-                  <div className="news-body">
-                    {post.createdAt && (
-                      <time className="news-date">
-                        {post.createdAt
-                          .toDate()
-                          .toLocaleDateString(
-                            lang === "es" ? "es-CO" : "en-US",
-                            { year: "numeric", month: "long", day: "numeric" },
-                          )}
-                      </time>
-                    )}
-                    <h3 className="news-card-title">{post.title}</h3>
-                    <p className="news-content">{post.content}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+        {posts === null && (
+          <section className="news-section">
+            <h2 className="news-title">{t.newsTitle}</h2>
+            <div className="news-empty"><div className="news-spinner" /></div>
+          </section>
+        )}
+        {posts !== null && (
+          <PostCarousel
+            posts={posts}
+            lang={lang}
+            title={t.newsTitle}
+            emptyText={t.newsEmpty}
+          />
+        )}
 
         <a
           href="tel:+573507105288"

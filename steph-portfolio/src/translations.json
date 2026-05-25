@@ -15,26 +15,27 @@
       "title": "Servicios de Estética Dental",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Blanqueamiento Dental",
-        "Carillas de Porcelana",
-        "Resinas y Composite Dental",
-        "Diseño de Sonrisa",
-        "Alineadores Transparentes",
-        "Coronas y Puentes Dentales",
-        "Contorneado de Encías"
+        "Blanqueamiento dental",
+        "Diseño de sonrisa",
+        "Restauraciones en resina",
+        "Ortodoncia convencional o invisible",
+        "Rehabilitación (Prótesis híbridas, removibles o Implantes)",
+        "Periodoncia",
+        "Endodoncia"
       ]
     },
     "medical": {
       "title": "Servicios de Estética Médica",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Inyecciones de Bótox",
-        "Relleno y Aumento de Labios",
-        "Contorno de Mejillas y Mandíbula",
-        "Tratamiento de Surcos Nasogenianos",
-        "Relleno de Ojeras",
-        "Rejuvenecimiento de la Piel",
-        "Tratamientos Antienvejecimiento"
+        "Tratamiento de ojeras",
+        "Corrección de surco nasogeniano",
+        "Botox",
+        "Remodelación labial",
+        "Marcación mandibular",
+        "Proyección de mentón",
+        "NCTF",
+        "Hidratación facial"
       ]
     }
   },
@@ -54,26 +55,27 @@
       "title": "Dental Aesthetic Services",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Teeth Whitening & Bleaching",
-        "Porcelain Veneers",
-        "Dental Bonding & Composite",
+        "Teeth Whitening",
         "Smile Design",
-        "Clear Aligners",
-        "Dental Crowns & Bridges",
-        "Gum Contouring"
+        "Resin Restorations",
+        "Conventional or Invisible Orthodontics",
+        "Rehabilitation (Hybrid, Removable Prosthetics or Implants)",
+        "Periodontics",
+        "Endodontics"
       ]
     },
     "medical": {
       "title": "Medical Aesthetic Services",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Botox Injections",
-        "Lip Fillers & Augmentation",
-        "Cheek & Jawline Contouring",
-        "Nasolabial Fold Treatment",
-        "Under-Eye Filler",
-        "Skin Rejuvenation",
-        "Anti-Aging Treatments"
+        "Under-Eye Treatment",
+        "Nasolabial Fold Correction",
+        "Botox",
+        "Lip Reshaping",
+        "Jawline Definition",
+        "Chin Projection",
+        "NCTF",
+        "Facial Hydration"
       ]
     }
   }

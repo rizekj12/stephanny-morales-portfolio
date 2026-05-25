@@ -11,91 +11,139 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CloseIcon from "@mui/icons-material/Close";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import translations from "./translations.json";
 import "./App.css";
 
-const dentalImages = [
+const allGalleryImages = [
   "/images/dental/dental2.jpg",
   "/images/dental/IMG_0602.png",
   "/images/dental/IMG_1364.png",
   "/images/dental/IMG_9815.png",
   "/images/dental/IMG_9826.png",
   "/images/dental/pic1.jpg",
-];
-
-const medicalImages = [
   "/images/medical/facial_treatment.jpg",
   "/images/medical/IMG_0060.jpg",
   "/images/medical/IMG_9268.jpg",
 ];
 
-function ImageCarousel({ images }) {
-  const [current, setCurrent] = useState(0);
-
-  const prev = () => setCurrent((i) => (i - 1 + images.length) % images.length);
-  const next = () => setCurrent((i) => (i + 1) % images.length);
+function Lightbox({ src, onClose }) {
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   return (
-    <Box sx={{ mb: 2.5 }}>
-      <Box sx={{ position: "relative", height: 210, borderRadius: "12px", overflow: "hidden", backgroundColor: "#131110" }}>
-        <Box
-          component="img"
-          src={images[current]}
-          alt={`foto ${current + 1}`}
-          sx={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", transition: "opacity 0.25s ease", }}
+    <div className="lightbox-overlay" onClick={onClose}>
+      <button className="lightbox-close" onClick={onClose} aria-label="Cerrar">
+        &#x2715;
+      </button>
+      <img
+        src={src}
+        alt="Vista ampliada"
+        className="lightbox-img"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
+function GalleryCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState(null);
+
+  const goTo = (idx) => {
+    setFading(true);
+    setTimeout(() => {
+      setCurrent(idx);
+      setFading(false);
+    }, 200);
+  };
+
+  const prev = (e) => {
+    e.stopPropagation();
+    goTo((current - 1 + allGalleryImages.length) % allGalleryImages.length);
+  };
+  const next = (e) => {
+    e.stopPropagation();
+    goTo((current + 1) % allGalleryImages.length);
+  };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setCurrent((c) => (c + 1) % allGalleryImages.length);
+        setFading(false);
+      }, 200);
+    }, 4000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <>
+      <div className="gallery-carousel">
+        <img
+          src={allGalleryImages[current]}
+          alt={`Foto ${current + 1}`}
+          className={`gallery-img${fading ? " gallery-img--fading" : ""}`}
+          onClick={() => setLightboxSrc(allGalleryImages[current])}
         />
 
-        {/* Left arrow */}
-        <IconButton
+        <button
+          className="gallery-arrow gallery-arrow--left"
           onClick={prev}
-          size="small"
-          sx={{
-            position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)",
-            backgroundColor: "rgba(13,11,9,0.65)", color: "#C9A55A",
-            backdropFilter: "blur(4px)",
-            "&:hover": { backgroundColor: "rgba(13,11,9,0.9)", color: "#E0C880" },
-          }}
+          aria-label="Anterior"
         >
-          <ArrowBackIosNewIcon sx={{ fontSize: 14 }} />
-        </IconButton>
-
-        {/* Right arrow */}
-        <IconButton
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          className="gallery-arrow gallery-arrow--right"
           onClick={next}
-          size="small"
-          sx={{
-            position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
-            backgroundColor: "rgba(13,11,9,0.65)", color: "#C9A55A",
-            backdropFilter: "blur(4px)",
-            "&:hover": { backgroundColor: "rgba(13,11,9,0.9)", color: "#E0C880" },
-          }}
+          aria-label="Siguiente"
         >
-          <ArrowForwardIosIcon sx={{ fontSize: 14 }} />
-        </IconButton>
-      </Box>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
 
-      {/* Dot indicators */}
-      <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, mt: 1.25 }}>
-        {images.map((_, i) => (
-          <Box
-            key={i}
-            onClick={() => setCurrent(i)}
-            sx={{
-              width: i === current ? 18 : 6,
-              height: 6,
-              borderRadius: "3px",
-              backgroundColor: i === current ? "#C9A55A" : "rgba(201,165,90,0.25)",
-              cursor: "pointer",
-              transition: "all 0.25s ease",
-            }}
-          />
-        ))}
-      </Box>
-    </Box>
+        <div className="gallery-dots">
+          {allGalleryImages.map((_, i) => (
+            <button
+              key={i}
+              className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                goTo(i);
+              }}
+              aria-label={`Foto ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {lightboxSrc && (
+        <Lightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />
+      )}
+    </>
   );
 }
 
@@ -108,7 +156,9 @@ const darkTheme = createTheme({
 
 function ServiceModal({ service, onClose }) {
   const [displayed, setDisplayed] = useState(null);
-  useEffect(() => { if (service) setDisplayed(service); }, [service]);
+  useEffect(() => {
+    if (service) setDisplayed(service);
+  }, [service]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -155,10 +205,6 @@ function ServiceModal({ service, onClose }) {
         </DialogTitle>
 
         <DialogContent dividers sx={{ borderColor: "#2A2318" }}>
-          {displayed?.images?.length > 0 && (
-            <ImageCarousel key={displayed.title} images={displayed.images} />
-          )}
-
           <List disablePadding>
             {displayed?.items?.map((item) => (
               <ListItem
@@ -211,14 +257,6 @@ function InstagramIcon() {
   );
 }
 
-function TikTokIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.81a8.18 8.18 0 0 0 4.78 1.52V6.89a4.85 4.85 0 0 1-1.01-.2z" />
-    </svg>
-  );
-}
-
 function WhatsAppIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -237,7 +275,7 @@ function App() {
     const unsub = onSnapshot(
       q,
       (snap) => setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
-      () => setPosts([])
+      () => setPosts([]),
     );
     return unsub;
   }, []);
@@ -277,6 +315,40 @@ function App() {
 
           <p className="specialty">{t.specialty}</p>
 
+          <div className="social-row">
+            <a
+              href="https://www.instagram.com/stephanny__morales?igsh=MTR1dTd0Y2N2Njk0Mw=="
+              className="social-btn"
+              aria-label={t.instagramLabel}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <InstagramIcon />
+              <span>@stephanny__morales</span>
+            </a>
+            <a
+              href="https://wa.me/573507105288"
+              className="social-btn"
+              aria-label={t.whatsappLabel}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WhatsAppIcon />
+              <span>+57 350 710 5288</span>
+            </a>
+            <a
+              href="mailto:Stephannymoralesalvarez@gmail.com"
+              className="social-btn"
+              aria-label="Email"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 7 10-7" />
+              </svg>
+              <span>Stephannymoralesalvarez@gmail.com</span>
+            </a>
+          </div>
+
           <p className="location">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -285,53 +357,52 @@ function App() {
           </p>
 
           <p className="bio">{t.bio}</p>
-
-          <div className="social-row">
-            <a
-              href="https://www.instagram.com/stephanny__morales?igsh=MTR1dTd0Y2N2Njk0Mw=="
-              className="social-btn"
-              aria-label={t.instagramLabel}
-            >
-              <InstagramIcon />
-            </a>
-            <a
-              href="https://www.tiktok.com/@stephannymoralesa?_r=1&_t=ZP-96c3D7eQlFn"
-              className="social-btn"
-              aria-label={t.tiktokLabel}
-            >
-              <TikTokIcon />
-            </a>
-            <a
-              href="tel:+573507105288"
-              className="social-btn"
-              aria-label={t.whatsappLabel}
-            >
-              <WhatsAppIcon />
-            </a>
-          </div>
         </header>
 
         <section className="services-section">
           <button
-            className="service-card"
-            onClick={() => setActiveModal({ ...t.dental, images: dentalImages })}
+            className="service-btn"
+            onClick={() => setActiveModal(t.dental)}
           >
-            <img src="/images/dental.jpg" alt={t.dentalCardLabel} />
-            <div className="service-card-label">
-              <span>{t.dentalCardLabel}</span>
-            </div>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 5.5c1.5-1.5 3-2 4.5-2 3.5 0 5 3 5 5.5 0 3-2 5-3 8.5-.5 1.5-1.5 2-2.5 2-1 0-2-.5-2.5-2-.5-1.5-.5-3-1.5-3s-1 1.5-1.5 3c-.5 1.5-1.5 2-2.5 2s-2-.5-2.5-2C5 13.5 3 11.5 3 8.5 3 6 4.5 3 8 3c1.5 0 3 .5 4.5 2z" />
+            </svg>
+            {t.dentalCardLabel}
           </button>
 
           <button
-            className="service-card"
-            onClick={() => setActiveModal({ ...t.medical, images: medicalImages })}
+            className="service-btn"
+            onClick={() => setActiveModal(t.medical)}
           >
-            <img src="/images/medical/facial_treatment.jpg" alt={t.medicalCardLabel} />
-            <div className="service-card-label">
-              <span>{t.medicalCardLabel}</span>
-            </div>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m18 2 4 4" />
+              <path d="m17 7 1-5" />
+              <path d="M3 22 8.5 16.5" />
+              <path d="m15 6-8.5 8.5-2.5 5 5-2.5L17.5 9" />
+              <path d="m5 16 3 3" />
+              <path d="m14 5 5 5" />
+            </svg>
+            {t.medicalCardLabel}
           </button>
         </section>
+
+        <GalleryCarousel />
 
         <section className="news-section">
           <h2 className="news-title">{t.newsTitle}</h2>
@@ -353,15 +424,21 @@ function App() {
               {posts.map((post) => (
                 <article key={post.id} className="news-card">
                   {post.imageUrl && (
-                    <img src={post.imageUrl} alt={post.title} className="news-img" />
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      className="news-img"
+                    />
                   )}
                   <div className="news-body">
                     {post.createdAt && (
                       <time className="news-date">
-                        {post.createdAt.toDate().toLocaleDateString(
-                          lang === "es" ? "es-CO" : "en-US",
-                          { year: "numeric", month: "long", day: "numeric" }
-                        )}
+                        {post.createdAt
+                          .toDate()
+                          .toLocaleDateString(
+                            lang === "es" ? "es-CO" : "en-US",
+                            { year: "numeric", month: "long", day: "numeric" },
+                          )}
                       </time>
                     )}
                     <h3 className="news-card-title">{post.title}</h3>

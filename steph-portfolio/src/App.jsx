@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
 import Dialog from "@mui/material/Dialog";
@@ -53,56 +53,63 @@ function Lightbox({ src, onClose }) {
 
 function GalleryCarousel({ images }) {
   const [current, setCurrent] = useState(0);
-  const [fading, setFading] = useState(false);
+  const [prev, setPrev] = useState(null);
   const [lightboxSrc, setLightboxSrc] = useState(null);
-
+  const currentRef = useRef(0);
+  const clearPrevTimer = useRef(null);
   const len = images.length;
 
-  const goTo = (idx) => {
-    setFading(true);
-    setTimeout(() => {
-      setCurrent(idx);
-      setFading(false);
-    }, 500);
-  };
+  const goTo = useCallback((idx) => {
+    setPrev(currentRef.current);
+    setCurrent(idx);
+    currentRef.current = idx;
+    if (clearPrevTimer.current) clearTimeout(clearPrevTimer.current);
+    clearPrevTimer.current = setTimeout(() => setPrev(null), 700);
+  }, []);
 
-  const prev = (e) => { e.stopPropagation(); goTo((current - 1 + len) % len); };
-  const next = (e) => { e.stopPropagation(); goTo((current + 1) % len); };
+  useEffect(() => {
+    return () => { if (clearPrevTimer.current) clearTimeout(clearPrevTimer.current); };
+  }, []);
 
   useEffect(() => {
     setCurrent(0);
+    setPrev(null);
+    currentRef.current = 0;
   }, [images]);
 
   useEffect(() => {
     if (len < 2) return;
     const id = setInterval(() => {
-      setFading(true);
-      setTimeout(() => {
-        setCurrent((c) => (c + 1) % len);
-        setFading(false);
-      }, 500);
+      goTo((currentRef.current + 1) % len);
     }, 4000);
     return () => clearInterval(id);
-  }, [len]);
+  }, [len, goTo]);
 
   if (len === 0) return null;
 
   return (
     <>
       <div className="gallery-carousel">
+        {prev !== null && (
+          <img
+            src={images[prev]}
+            className="gallery-img gallery-img--out"
+            aria-hidden="true"
+          />
+        )}
         <img
           src={images[current]}
+          className="gallery-img gallery-img--in"
           alt={`Foto ${current + 1}`}
-          className={`gallery-img${fading ? " gallery-img--fading" : ""}`}
           onClick={() => setLightboxSrc(images[current])}
         />
 
-        <button className="gallery-arrow gallery-arrow--left" onClick={prev} aria-label="Anterior">
+        <button className="gallery-arrow gallery-arrow--left" onClick={(e) => { e.stopPropagation(); goTo((currentRef.current - 1 + len) % len); }} aria-label="Anterior">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <button className="gallery-arrow gallery-arrow--right" onClick={next} aria-label="Siguiente">
+        <button className="gallery-arrow gallery-arrow--right" onClick={(e) => { e.stopPropagation(); goTo((currentRef.current + 1) % len); }} aria-label="Siguiente">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>

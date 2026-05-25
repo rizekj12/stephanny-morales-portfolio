@@ -541,7 +541,7 @@ function App() {
         )}
 
         <a
-          href="https://wa.me/573507105288"
+          href="https://wa.me/573507105388"
           className="appointment-btn"
           aria-label={t.appointmentBtn}
           target="_blank"

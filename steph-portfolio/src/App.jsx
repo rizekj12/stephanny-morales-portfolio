@@ -482,9 +482,11 @@ function App() {
         )}
 
         <a
-          href="tel:+573507105288"
+          href="https://wa.me/573507105288"
           className="appointment-btn"
           aria-label={t.appointmentBtn}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <svg
             viewBox="0 0 24 24"

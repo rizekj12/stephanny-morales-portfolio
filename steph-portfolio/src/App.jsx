@@ -155,20 +155,30 @@ function PostCarousel({ posts, lang, emptyText, title }) {
 
   const goTo = (idx) => {
     setFading(true);
-    setTimeout(() => { setCurrent(idx); setFading(false); }, 180);
+    setTimeout(() => {
+      setCurrent(idx);
+      setFading(false);
+    }, 180);
   };
 
   return (
     <section className="news-section">
       <h2 className="news-title">{title}</h2>
       {items.length === 0 && (
-        <div className="news-empty"><p>{emptyText}</p></div>
+        <div className="news-empty">
+          <p>{emptyText}</p>
+        </div>
       )}
       {items.length > 0 && (
         <>
           <article className={`post-card${fading ? " post-card--fading" : ""}`}>
             {post.imageUrl && post.mediaType === "video" && (
-              <video src={post.imageUrl} className="news-img" controls playsInline />
+              <video
+                src={post.imageUrl}
+                className="news-img"
+                controls
+                playsInline
+              />
             )}
             {post.imageUrl && post.mediaType !== "video" && (
               <img src={post.imageUrl} alt={post.title} className="news-img" />
@@ -176,10 +186,13 @@ function PostCarousel({ posts, lang, emptyText, title }) {
             <div className="post-card-body">
               {post.createdAt && (
                 <time className="news-date">
-                  {post.createdAt.toDate().toLocaleDateString(
-                    lang === "es" ? "es-CO" : "en-US",
-                    { year: "numeric", month: "long", day: "numeric" }
-                  )}
+                  {post.createdAt
+                    .toDate()
+                    .toLocaleDateString(lang === "es" ? "es-CO" : "en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                 </time>
               )}
               <h3 className="news-card-title">{post.title}</h3>
@@ -189,18 +202,54 @@ function PostCarousel({ posts, lang, emptyText, title }) {
 
           {items.length > 1 && (
             <div className="post-nav">
-              <button className="post-arrow" onClick={() => goTo((current - 1 + items.length) % items.length)} aria-label="Anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6" /></svg>
+              <button
+                className="post-arrow"
+                onClick={() =>
+                  goTo((current - 1 + items.length) % items.length)
+                }
+                aria-label="Anterior"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
               </button>
-              <div className="gallery-dots" style={{ position: 'static', margin: '0 8px' }}>
+              <div
+                className="gallery-dots"
+                style={{ position: "static", margin: "0 8px" }}
+              >
                 {items.map((_, i) => (
-                  <button key={i} className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`} onClick={() => goTo(i)} aria-label={`Post ${i + 1}`} />
+                  <button
+                    key={i}
+                    className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`}
+                    onClick={() => goTo(i)}
+                    aria-label={`Post ${i + 1}`}
+                  />
                 ))}
               </div>
-              <button className="post-arrow" onClick={() => goTo((current + 1) % items.length)} aria-label="Siguiente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
+              <button
+                className="post-arrow"
+                onClick={() => goTo((current + 1) % items.length)}
+                aria-label="Siguiente"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </button>
-              <span className="post-counter">{current + 1} / {items.length}</span>
+              <span className="post-counter">
+                {current + 1} / {items.length}
+              </span>
             </div>
           )}
         </>
@@ -389,7 +438,7 @@ function App() {
               <span>@stephanny__morales</span>
             </a>
             <a
-              href="https://wa.me/573507105288"
+              href="https://wa.me/573507105388"
               className="social-btn"
               aria-label={t.whatsappLabel}
               target="_blank"
@@ -403,7 +452,15 @@ function App() {
               className="social-btn"
               aria-label="Email"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m2 7 10 7 10-7" />
               </svg>
@@ -469,7 +526,9 @@ function App() {
         {posts === null && (
           <section className="news-section">
             <h2 className="news-title">{t.newsTitle}</h2>
-            <div className="news-empty"><div className="news-spinner" /></div>
+            <div className="news-empty">
+              <div className="news-spinner" />
+            </div>
           </section>
         )}
         {posts !== null && (

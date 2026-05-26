@@ -52,78 +52,55 @@ function Lightbox({ src, onClose }) {
 }
 
 function GalleryCarousel({ images }) {
-  const [current, setCurrent] = useState(0);
-  const [prev, setPrev] = useState(null);
+  const trackRef = useRef(null);
   const [lightboxSrc, setLightboxSrc] = useState(null);
-  const currentRef = useRef(0);
-  const clearPrevTimer = useRef(null);
-  const len = images.length;
+  const touchStartX = useRef(0);
+  const wasSwiping = useRef(false);
 
-  const goTo = useCallback((idx) => {
-    setPrev(currentRef.current);
-    setCurrent(idx);
-    currentRef.current = idx;
-    if (clearPrevTimer.current) clearTimeout(clearPrevTimer.current);
-    clearPrevTimer.current = setTimeout(() => setPrev(null), 700);
-  }, []);
+  if (images.length === 0) return null;
 
-  useEffect(() => {
-    return () => { if (clearPrevTimer.current) clearTimeout(clearPrevTimer.current); };
-  }, []);
-
-  useEffect(() => {
-    setCurrent(0);
-    setPrev(null);
-    currentRef.current = 0;
-  }, [images]);
-
-  useEffect(() => {
-    if (len < 2) return;
-    const id = setInterval(() => {
-      goTo((currentRef.current + 1) % len);
-    }, 4000);
-    return () => clearInterval(id);
-  }, [len, goTo]);
-
-  if (len === 0) return null;
+  const scrollByOne = (dir) => {
+    if (!trackRef.current) return;
+    const slide = trackRef.current.querySelector(".gallery-slide");
+    const slideWidth = slide ? slide.offsetWidth + 10 : 220;
+    trackRef.current.scrollBy({ left: dir * slideWidth, behavior: "smooth" });
+  };
 
   return (
     <>
       <div className="gallery-carousel">
-        {prev !== null && (
-          <img
-            src={images[prev]}
-            className="gallery-img gallery-img--out"
-            aria-hidden="true"
-          />
-        )}
-        <img
-          src={images[current]}
-          className="gallery-img gallery-img--in"
-          alt={`Foto ${current + 1}`}
-          onClick={() => setLightboxSrc(images[current])}
-        />
-
-        <button className="gallery-arrow gallery-arrow--left" onClick={(e) => { e.stopPropagation(); goTo((currentRef.current - 1 + len) % len); }} aria-label="Anterior">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-        <button className="gallery-arrow gallery-arrow--right" onClick={(e) => { e.stopPropagation(); goTo((currentRef.current + 1) % len); }} aria-label="Siguiente">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-        <div className="gallery-dots">
-          {images.map((_, i) => (
-            <button
-              key={i}
-              className={`gallery-dot${i === current ? " gallery-dot--active" : ""}`}
-              onClick={(e) => { e.stopPropagation(); goTo(i); }}
-              aria-label={`Foto ${i + 1}`}
-            />
+        <div ref={trackRef} className="gallery-track">
+          {images.map((src, i) => (
+            <div key={i} className="gallery-slide">
+              <img
+                src={src}
+                alt={`Foto ${i + 1}`}
+                className="gallery-slide-img"
+                onTouchStart={(e) => {
+                  touchStartX.current = e.touches[0].clientX;
+                  wasSwiping.current = false;
+                }}
+                onTouchMove={(e) => {
+                  if (Math.abs(e.touches[0].clientX - touchStartX.current) > 8)
+                    wasSwiping.current = true;
+                }}
+                onClick={() => { if (!wasSwiping.current) setLightboxSrc(src); }}
+              />
+            </div>
           ))}
+        </div>
+
+        <div className="gallery-nav">
+          <button className="post-arrow" onClick={() => scrollByOne(-1)} aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <button className="post-arrow" onClick={() => scrollByOne(1)} aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
       </div>
 

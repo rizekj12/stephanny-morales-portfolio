@@ -27,6 +27,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import LogoutIcon from '@mui/icons-material/Logout'
 import AddIcon from '@mui/icons-material/Add'
 import UploadIcon from '@mui/icons-material/Upload'
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 
@@ -39,6 +42,32 @@ const adminTheme = createTheme({
   },
   shape: { borderRadius: 12 },
 })
+
+function SortablePhoto({ item, index, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id })
+  return (
+    <Box
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
+      sx={{ position: 'relative', borderRadius: 2, overflow: 'hidden', border: isDragging ? '1px solid #C9A55A' : '1px solid rgba(201,165,90,0.2)', aspectRatio: '1', cursor: 'grab', touchAction: 'none' }}
+      {...attributes}
+      {...listeners}
+    >
+      <img src={item.url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none', userSelect: 'none' }} />
+      <Box sx={{ position: 'absolute', top: 5, left: 5, background: 'rgba(0,0,0,0.72)', color: '#C9A55A', borderRadius: 1, px: 0.7, py: 0.1, fontSize: '0.7rem', fontWeight: 700, lineHeight: 1.6, pointerEvents: 'none' }}>
+        {index + 1}
+      </Box>
+      <IconButton
+        size="small"
+        onPointerDown={e => e.stopPropagation()}
+        onClick={() => onDelete(item.id)}
+        sx={{ position: 'absolute', top: 3, right: 3, backgroundColor: 'rgba(0,0,0,0.65)', color: '#c0392b', '&:hover': { backgroundColor: 'rgba(0,0,0,0.85)' } }}
+      >
+        <DeleteIcon sx={{ fontSize: 14 }} />
+      </IconButton>
+    </Box>
+  )
+}
 
 function LoginForm({ onLogin }) {
   const [email, setEmail]       = useState('')
@@ -147,17 +176,20 @@ function Dashboard({ user }) {
   }
 
   useEffect(() => {
-    const q = query(collection(db, 'gallery'), orderBy('createdAt', 'asc'))
-    const unsub = onSnapshot(q, snap =>
-      setGalleryItems(snap.docs.map(d => ({ id: d.id, ...d.data() })))
-    )
+    const unsub = onSnapshot(collection(db, 'gallery'), snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+      setGalleryItems(items)
+    })
     return unsub
   }, [])
 
   const handleGalleryUpload = (e) => {
     const files = Array.from(e.target.files)
     if (!files.length) return
-    files.forEach(file => {
+    const slots = 20 - galleryItems.length
+    const toUpload = files.slice(0, slots)
+    toUpload.forEach((file, i) => {
       const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`)
       const task = uploadBytesResumable(storageRef, file)
       setGalleryProgress(0)
@@ -170,6 +202,7 @@ function Dashboard({ user }) {
             url,
             storagePath: storageRef.fullPath,
             name: file.name,
+            order: galleryItems.length + i,
             createdAt: serverTimestamp(),
           })
           setGalleryProgress(null)
@@ -177,6 +210,19 @@ function Dashboard({ user }) {
       )
     })
     e.target.value = ''
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 200, tolerance: 8 } }),
+  )
+
+  const handleGalleryDragEnd = async ({ active, over }) => {
+    if (!over || active.id === over.id) return
+    const oldIdx = galleryItems.findIndex(g => g.id === active.id)
+    const newIdx = galleryItems.findIndex(g => g.id === over.id)
+    const reordered = arrayMove(galleryItems, oldIdx, newIdx)
+    await Promise.all(reordered.map((item, i) => updateDoc(doc(db, 'gallery', item.id), { order: i })))
   }
 
   const handleGalleryDelete = async () => {
@@ -402,48 +448,51 @@ function Dashboard({ user }) {
 
       {/* ── Gallery Section ── */}
       <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 5, mb: 2, color: 'primary.main' }}>
-        Fotos del Carrusel ({galleryItems.length})
+        Fotos del Carrusel ({galleryItems.length} / 20)
       </Typography>
 
       <Card sx={{ mb: 4, border: '1px solid', borderColor: 'primary.main' }}>
         <CardContent>
-          <input
-            id="gallery-upload" type="file" accept="image/*" multiple
-            style={{ display: 'none' }} onChange={handleGalleryUpload}
-          />
-          <label htmlFor="gallery-upload">
-            <Button
-              component="span" variant="outlined" startIcon={<UploadIcon />}
-              disabled={galleryProgress !== null}
-            >
-              {galleryProgress !== null ? `Subiendo… ${galleryProgress}%` : 'Agregar fotos al carrusel'}
-            </Button>
-          </label>
-          {galleryProgress !== null && (
-            <LinearProgress variant="determinate" value={galleryProgress} sx={{ mt: 1, borderRadius: 4 }} />
+          {galleryItems.length >= 20 ? (
+            <Typography variant="body2" sx={{ color: '#C9A55A' }}>
+              Límite alcanzado (20 fotos). Elimina una foto para agregar otra.
+            </Typography>
+          ) : (
+            <>
+              <input
+                id="gallery-upload" type="file" accept="image/*" multiple
+                style={{ display: 'none' }} onChange={handleGalleryUpload}
+              />
+              <label htmlFor="gallery-upload">
+                <Button
+                  component="span" variant="outlined" startIcon={<UploadIcon />}
+                  disabled={galleryProgress !== null}
+                >
+                  {galleryProgress !== null ? `Subiendo… ${galleryProgress}%` : `Agregar fotos (quedan ${20 - galleryItems.length})`}
+                </Button>
+              </label>
+              {galleryProgress !== null && (
+                <LinearProgress variant="determinate" value={galleryProgress} sx={{ mt: 1, borderRadius: 4 }} />
+              )}
+            </>
           )}
         </CardContent>
       </Card>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4 }}>
-        {galleryItems.map(item => (
-          <Box key={item.id} sx={{ position: 'relative', borderRadius: 2, overflow: 'hidden', border: '1px solid rgba(201,165,90,0.2)', aspectRatio: '1' }}>
-            <img src={item.url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            <IconButton
-              size="small"
-              onClick={() => setGalleryDeleteId(item.id)}
-              sx={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'rgba(0,0,0,0.65)', color: '#c0392b', '&:hover': { backgroundColor: 'rgba(0,0,0,0.85)' } }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleGalleryDragEnd}>
+        <SortableContext items={galleryItems.map(g => g.id)} strategy={rectSortingStrategy}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4 }}>
+            {galleryItems.map((item, index) => (
+              <SortablePhoto key={item.id} item={item} index={index} onDelete={setGalleryDeleteId} />
+            ))}
+            {galleryItems.length === 0 && (
+              <Typography variant="body2" sx={{ color: 'text.secondary', gridColumn: '1/-1', textAlign: 'center', py: 2 }}>
+                No hay fotos en el carrusel aún.
+              </Typography>
+            )}
           </Box>
-        ))}
-        {galleryItems.length === 0 && (
-          <Typography variant="body2" sx={{ color: 'text.secondary', gridColumn: '1/-1', textAlign: 'center', py: 2 }}>
-            No hay fotos en el carrusel aún.
-          </Typography>
-        )}
-      </Box>
+        </SortableContext>
+      </DndContext>
 
       {/* Gallery Delete Confirmation */}
       <Dialog

@@ -172,7 +172,7 @@
   border: 1px solid rgba(201, 165, 90, 0.2);
   border-radius: 20px;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--bg);
   transition: opacity 0.18s ease;
 }
 
@@ -277,10 +277,9 @@
 
 .news-img {
   width: 100%;
-  height: auto;
   max-height: 480px;
   object-fit: contain;
-  background: #0D0B09;
+  background: var(--bg);
   display: block;
 }
 

@@ -357,12 +357,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const q = query(collection(db, "gallery"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(
-      q,
+      collection(db, "gallery"),
       (snap) => {
-        const items = snap.docs.map((d) => d.data().url);
-        setGalleryImages(items.length > 0 ? items : allGalleryImages);
+        const items = snap.docs.map((d) => d.data());
+        items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+        const urls = items.map((d) => d.url);
+        setGalleryImages(urls.length > 0 ? urls : allGalleryImages);
       },
       () => {},
     );

@@ -340,9 +340,73 @@ function WhatsAppIcon() {
   );
 }
 
+function ServicesSection({ t }) {
+  const [dentalOpen, setDentalOpen] = useState(false);
+  const [medicalOpen, setMedicalOpen] = useState(false);
+
+  return (
+    <section className="svc-section">
+      <p className="svc-tagline">{t.servicesTagline}</p>
+      <div className="svc-grid">
+        <div className="svc-col">
+          <button
+            className="svc-toggle-btn"
+            onClick={() => setDentalOpen(!dentalOpen)}
+            aria-expanded={dentalOpen}
+          >
+            <span className="svc-plus">{dentalOpen ? "×" : "+"}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5.5c1.5-1.5 3-2 4.5-2 3.5 0 5 3 5 5.5 0 3-2 5-3 8.5-.5 1.5-1.5 2-2.5 2-1 0-2-.5-2.5-2-.5-1.5-.5-3-1.5-3s-1 1.5-1.5 3c-.5 1.5-1.5 2-2.5 2s-2-.5-2.5-2C5 13.5 3 11.5 3 8.5 3 6 4.5 3 8 3c1.5 0 3 .5 4.5 2z" />
+            </svg>
+            <span className="svc-label">{t.dental.title}</span>
+          </button>
+          <div className={`svc-list-wrap${dentalOpen ? " svc-list-wrap--open" : ""}`}>
+            <ul className="svc-list">
+              {t.dental.items.map((item) => (
+                <li key={item.name}>
+                  <strong className="svc-item-name">{item.name}</strong>
+                  <span className="svc-item-desc">{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="svc-col">
+          <button
+            className="svc-toggle-btn"
+            onClick={() => setMedicalOpen(!medicalOpen)}
+            aria-expanded={medicalOpen}
+          >
+            <span className="svc-plus">{medicalOpen ? "×" : "+"}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m18 2 4 4" />
+              <path d="m17 7 1-5" />
+              <path d="M3 22 8.5 16.5" />
+              <path d="m15 6-8.5 8.5-2.5 5 5-2.5L17.5 9" />
+              <path d="m5 16 3 3" />
+              <path d="m14 4 5 5" />
+            </svg>
+            <span className="svc-label">{t.medical.title}</span>
+          </button>
+          <div className={`svc-list-wrap${medicalOpen ? " svc-list-wrap--open" : ""}`}>
+            <ul className="svc-list">
+              {t.medical.items.map((item) => (
+                <li key={item.name}>
+                  <strong className="svc-item-name">{item.name}</strong>
+                  <span className="svc-item-desc">{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const [lang, setLang] = useState("es");
-  const [activeModal, setActiveModal] = useState(null);
   const [posts, setPosts] = useState(null);
   const [galleryImages, setGalleryImages] = useState(allGalleryImages);
 
@@ -423,7 +487,7 @@ function App() {
           <span className="nav-divider" aria-hidden="true" />
           <button
             className="lang-toggle"
-            onClick={() => setActiveModal(null) || setLang(otherLang)}
+            onClick={() => setLang(otherLang)}
             aria-label={`Switch to ${otherLang.toUpperCase()}`}
           >
             <span className={lang === "en" ? "lang-active" : ""}>EN</span>
@@ -478,50 +542,9 @@ function App() {
         </div>
       </header>
 
+      <ServicesSection t={t} />
+
       <div className="portfolio" id="gallery">
-        <section className="services-section">
-          <button
-            className="service-btn"
-            onClick={() => setActiveModal(t.dental)}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M12 5.5c1.5-1.5 3-2 4.5-2 3.5 0 5 3 5 5.5 0 3-2 5-3 8.5-.5 1.5-1.5 2-2.5 2-1 0-2-.5-2.5-2-.5-1.5-.5-3-1.5-3s-1 1.5-1.5 3c-.5 1.5-1.5 2-2.5 2s-2-.5-2.5-2C5 13.5 3 11.5 3 8.5 3 6 4.5 3 8 3c1.5 0 3 .5 4.5 2z" />
-            </svg>
-            {t.dentalCardLabel}
-          </button>
-
-          <button
-            className="service-btn"
-            onClick={() => setActiveModal(t.medical)}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m18 2 4 4" />
-              <path d="m17 7 1-5" />
-              <path d="M3 22 8.5 16.5" />
-              <path d="m15 6-8.5 8.5-2.5 5 5-2.5L17.5 9" />
-              <path d="m5 16 3 3" />
-              <path d="m14 5 5 5" />
-            </svg>
-            {t.medicalCardLabel}
-          </button>
-        </section>
-
         <GalleryCarousel images={galleryImages} />
 
         {posts === null && (
@@ -560,10 +583,6 @@ function App() {
         </a>
       </div>
 
-      <ServiceModal
-        service={activeModal}
-        onClose={() => setActiveModal(null)}
-      />
     </>
   );
 }

@@ -17,31 +17,30 @@
     "appointmentBtn": "Agenda tu cita",
     "dentalCardLabel": "Servicios Dentales",
     "medicalCardLabel": "Servicios de Estética Médica",
+    "servicesTagline": "Estética dental, estética médica y tratamientos especializados — todos ofrecidos con el cuidado y la precisión que mereces.",
     "dental": {
       "title": "Servicios de Estética Dental",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Blanqueamiento dental",
-        "Diseño de sonrisa",
-        "Restauraciones en resina",
-        "Ortodoncia convencional o invisible",
-        "Rehabilitación (Prótesis híbridas, removibles o Implantes)",
-        "Periodoncia",
-        "Endodoncia"
+        { "name": "Blanqueamiento dental", "desc": "Resultados profesionales, seguros y duraderos" },
+        { "name": "Diseño de sonrisa", "desc": "Diseño personalizado que realza tu sonrisa natural" },
+        { "name": "Restauraciones en resina", "desc": "Obturaciones y bonding de apariencia natural" },
+        { "name": "Ortodoncia convencional o invisible", "desc": "Brackets o alineadores para cada estilo de vida" },
+        { "name": "Rehabilitación", "desc": "Prótesis híbridas, removibles o implantes" },
+        { "name": "Periodoncia", "desc": "Salud gingival, limpieza profunda y mantenimiento" },
+        { "name": "Endodoncia", "desc": "Terapia de conducto para salvar y restaurar tu diente" }
       ]
     },
     "medical": {
       "title": "Servicios de Estética Médica",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Tratamiento de ojeras",
-        "Corrección de surco nasogeniano",
-        "Botox",
-        "Remodelación labial",
-        "Marcación mandibular",
-        "Proyección de mentón",
-        "NCTF",
-        "Hidratación facial"
+        { "name": "Tratamiento de ojeras", "desc": "Reduce ojeras y hundimiento" },
+        { "name": "Corrección de surco nasogeniano", "desc": "Suaviza las líneas de la sonrisa de forma natural" },
+        { "name": "Botox", "desc": "Líneas de expresión, prevención y relajación" },
+        { "name": "Remodelación labial", "desc": "Volumen y definición con equilibrio natural" },
+        { "name": "Marcación mandibular", "desc": "Contorno esculpido y estructurado" },
+        { "name": "Proyección de mentón", "desc": "Armonía facial mediante proyección sutil" },
+        { "name": "NCTF", "desc": "Revitalización cutánea con polinucleótidos" },
+        { "name": "Hidratación facial", "desc": "Restauración de humedad profunda para una piel radiante" }
       ]
     }
   },
@@ -63,31 +62,30 @@
     "appointmentBtn": "Schedule Your Appointment",
     "dentalCardLabel": "Dental Services",
     "medicalCardLabel": "Medical Aesthetic Services",
+    "servicesTagline": "Dental aesthetics, medical aesthetics, and specialized treatments — all offered with the care and precision you deserve.",
     "dental": {
       "title": "Dental Aesthetic Services",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Teeth Whitening",
-        "Smile Design",
-        "Resin Restorations",
-        "Conventional or Invisible Orthodontics",
-        "Rehabilitation (Hybrid, Removable Prosthetics or Implants)",
-        "Periodontics",
-        "Endodontics"
+        { "name": "Teeth Whitening", "desc": "Professional-grade, safe, long-lasting results" },
+        { "name": "Smile Design", "desc": "Custom design that enhances your natural smile" },
+        { "name": "Resin Restorations", "desc": "Natural-looking composite fillings and bonding" },
+        { "name": "Conventional or Invisible Orthodontics", "desc": "Braces or aligners for every lifestyle" },
+        { "name": "Rehabilitation", "desc": "Hybrid, removable prosthetics, or implants" },
+        { "name": "Periodontics", "desc": "Gum health, deep cleaning, and maintenance" },
+        { "name": "Endodontics", "desc": "Root canal therapy to save and restore your tooth" }
       ]
     },
     "medical": {
       "title": "Medical Aesthetic Services",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "items": [
-        "Under-Eye Treatment",
-        "Nasolabial Fold Correction",
-        "Botox",
-        "Lip Reshaping",
-        "Jawline Definition",
-        "Chin Projection",
-        "NCTF",
-        "Facial Hydration"
+        { "name": "Under-Eye Treatment", "desc": "Reduces dark circles and hollowing" },
+        { "name": "Nasolabial Fold Correction", "desc": "Smooth smile lines naturally" },
+        { "name": "Botox", "desc": "Expression lines, prevention, and relaxation" },
+        { "name": "Lip Reshaping", "desc": "Volume and definition, naturally balanced" },
+        { "name": "Jawline Definition", "desc": "Sculpted, structured contour" },
+        { "name": "Chin Projection", "desc": "Facial harmony through subtle projection" },
+        { "name": "NCTF", "desc": "Skin revitalization with polynucleotides" },
+        { "name": "Facial Hydration", "desc": "Deep moisture restoration for radiant skin" }
       ]
     }
   }

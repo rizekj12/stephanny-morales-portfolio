@@ -544,8 +544,15 @@ function App() {
 
       <ServicesSection t={t} />
 
-      <div className="portfolio" id="gallery">
+      <section className="gallery-section" id="gallery">
+        <div className="gallery-header">
+          <span className="gallery-eyebrow">{t.patientGalleryLabel}</span>
+          <h2 className="gallery-heading">{t.patientGalleryTitle}</h2>
+        </div>
         <GalleryCarousel images={galleryImages} />
+      </section>
+
+      <div className="portfolio">
 
         {posts === null && (
           <section className="news-section">

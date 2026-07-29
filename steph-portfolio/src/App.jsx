@@ -111,7 +111,7 @@ function GalleryCarousel({ images }) {
   );
 }
 
-function PostCarousel({ posts, lang, emptyText, title }) {
+function PostCarousel({ posts, lang, emptyText }) {
   const [current, setCurrent] = useState(0);
   const [fading, setFading] = useState(false);
   const items = posts.slice(0, 10);
@@ -127,7 +127,6 @@ function PostCarousel({ posts, lang, emptyText, title }) {
 
   return (
     <section className="news-section">
-      <h2 className="news-title">{title}</h2>
       {items.length === 0 && (
         <div className="news-empty">
           <p>{emptyText}</p>
@@ -552,25 +551,22 @@ function App() {
         <GalleryCarousel images={galleryImages} />
       </section>
 
-      <div className="portfolio">
-
+      <section className="news-section-full">
+        <div className="news-header">
+          <span className="news-eyebrow">{t.newsEyebrow}</span>
+          <h2 className="news-heading">{t.newsHeading}</h2>
+        </div>
         {posts === null && (
-          <section className="news-section">
-            <h2 className="news-title">{t.newsTitle}</h2>
-            <div className="news-empty">
-              <div className="news-spinner" />
-            </div>
-          </section>
+          <div className="news-spinner-wrap">
+            <div className="news-spinner" />
+          </div>
         )}
         {posts !== null && (
-          <PostCarousel
-            posts={posts}
-            lang={lang}
-            title={t.newsTitle}
-            emptyText={t.newsEmpty}
-          />
+          <PostCarousel posts={posts} lang={lang} emptyText={t.newsEmpty} />
         )}
+      </section>
 
+      <div className="portfolio">
         <a
           href="https://wa.me/573507105388"
           className="appointment-btn"

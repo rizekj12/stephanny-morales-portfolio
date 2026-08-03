@@ -111,7 +111,7 @@ function GalleryCarousel({ images }) {
   );
 }
 
-function PostCarousel({ posts, lang, emptyText, title }) {
+function PostCarousel({ posts, lang, emptyText }) {
   const [current, setCurrent] = useState(0);
   const [fading, setFading] = useState(false);
   const items = posts.slice(0, 10);
@@ -127,7 +127,6 @@ function PostCarousel({ posts, lang, emptyText, title }) {
 
   return (
     <section className="news-section">
-      <h2 className="news-title">{title}</h2>
       {items.length === 0 && (
         <div className="news-empty">
           <p>{emptyText}</p>
@@ -340,9 +339,73 @@ function WhatsAppIcon() {
   );
 }
 
+function ServicesSection({ t }) {
+  const [dentalOpen, setDentalOpen] = useState(false);
+  const [medicalOpen, setMedicalOpen] = useState(false);
+
+  return (
+    <section className="svc-section">
+      <p className="svc-tagline">{t.servicesTagline}</p>
+      <div className="svc-grid">
+        <div className="svc-col">
+          <button
+            className="svc-toggle-btn"
+            onClick={() => setDentalOpen(!dentalOpen)}
+            aria-expanded={dentalOpen}
+          >
+            <span className="svc-plus">{dentalOpen ? "×" : "+"}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5.5c1.5-1.5 3-2 4.5-2 3.5 0 5 3 5 5.5 0 3-2 5-3 8.5-.5 1.5-1.5 2-2.5 2-1 0-2-.5-2.5-2-.5-1.5-.5-3-1.5-3s-1 1.5-1.5 3c-.5 1.5-1.5 2-2.5 2s-2-.5-2.5-2C5 13.5 3 11.5 3 8.5 3 6 4.5 3 8 3c1.5 0 3 .5 4.5 2z" />
+            </svg>
+            <span className="svc-label">{t.dental.title}</span>
+          </button>
+          <div className={`svc-list-wrap${dentalOpen ? " svc-list-wrap--open" : ""}`}>
+            <ul className="svc-list">
+              {t.dental.items.map((item) => (
+                <li key={item.name}>
+                  <strong className="svc-item-name">{item.name}</strong>
+                  <span className="svc-item-desc">{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="svc-col">
+          <button
+            className="svc-toggle-btn"
+            onClick={() => setMedicalOpen(!medicalOpen)}
+            aria-expanded={medicalOpen}
+          >
+            <span className="svc-plus">{medicalOpen ? "×" : "+"}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m18 2 4 4" />
+              <path d="m17 7 1-5" />
+              <path d="M3 22 8.5 16.5" />
+              <path d="m15 6-8.5 8.5-2.5 5 5-2.5L17.5 9" />
+              <path d="m5 16 3 3" />
+              <path d="m14 4 5 5" />
+            </svg>
+            <span className="svc-label">{t.medical.title}</span>
+          </button>
+          <div className={`svc-list-wrap${medicalOpen ? " svc-list-wrap--open" : ""}`}>
+            <ul className="svc-list">
+              {t.medical.items.map((item) => (
+                <li key={item.name}>
+                  <strong className="svc-item-name">{item.name}</strong>
+                  <span className="svc-item-desc">{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const [lang, setLang] = useState("es");
-  const [activeModal, setActiveModal] = useState(null);
   const [posts, setPosts] = useState(null);
   const [galleryImages, setGalleryImages] = useState(allGalleryImages);
 
@@ -375,150 +438,135 @@ function App() {
 
   return (
     <>
-      <button
-        className="lang-toggle"
-        onClick={() => setActiveModal(null) || setLang(otherLang)}
-        aria-label={`Switch to ${otherLang.toUpperCase()}`}
-      >
-        <span className={lang === "es" ? "lang-active" : ""}>ES</span>
-        <span className="lang-divider">|</span>
-        <span className={lang === "en" ? "lang-active" : ""}>EN</span>
-      </button>
-
-      <div className="portfolio">
-        <header className="hero-section">
-          <div className="logo-wrapper">
-            <img
-              src="/images/logo_black.jpg"
-              alt="Stephanny Moralez Alvarez"
-              className="logo-img"
-            />
-          </div>
-
-          <div className="profile-pic-wrapper">
-            <img
-              src="/images/profilePic.jpg"
-              alt="Dr. Stephanny Moralez Alvarez"
-              className="profile-pic"
-            />
-          </div>
-
-          <p className="specialty">{t.specialty}</p>
-
-          <div className="social-row">
-            <a
-              href="https://www.instagram.com/stephanny__morales?igsh=MTR1dTd0Y2N2Njk0Mw=="
-              className="social-btn"
-              aria-label={t.instagramLabel}
-              target="_blank"
-              rel="noopener noreferrer"
+      <nav className="top-nav">
+        <div className="top-nav-logo">
+          <img
+            src="/images/logo_black.jpg"
+            alt="Stephanny Morales Alvarez"
+            className="nav-logo-img"
+          />
+        </div>
+        <div className="top-nav-right">
+          <a
+            href="https://www.instagram.com/stephanny__morales?igsh=MTR1dTd0Y2N2Njk0Mw=="
+            className="nav-icon-btn"
+            aria-label={t.instagramLabel}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <InstagramIcon />
+          </a>
+          <a
+            href="https://wa.me/573507105388"
+            className="nav-icon-btn"
+            aria-label={t.whatsappLabel}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <WhatsAppIcon />
+          </a>
+          <a
+            href="mailto:Stephannymoralesalvarez@gmail.com"
+            className="nav-icon-btn"
+            aria-label="Email"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              <InstagramIcon />
-              <span>@stephanny__morales</span>
-            </a>
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m2 7 10 7 10-7" />
+            </svg>
+          </a>
+          <span className="nav-divider" aria-hidden="true" />
+          <button
+            className="lang-toggle"
+            onClick={() => setLang(otherLang)}
+            aria-label={`Switch to ${otherLang.toUpperCase()}`}
+          >
+            <span className={lang === "en" ? "lang-active" : ""}>EN</span>
+            <span className="lang-divider">|</span>
+            <span className={lang === "es" ? "lang-active" : ""}>ES</span>
+          </button>
+        </div>
+      </nav>
+
+      <header className="hero-section">
+        <svg className="hero-arc" viewBox="0 0 866 577" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="heroWaveFade" x1="0%" y1="100%" x2="60%" y2="0%">
+              <stop offset="0%" stopColor="#9A7420" stopOpacity="0"/>
+              <stop offset="30%" stopColor="#9A7420" stopOpacity="1"/>
+              <stop offset="44%" stopColor="#9A7420" stopOpacity="0.25"/>
+              <stop offset="58%" stopColor="#9A7420" stopOpacity="1"/>
+              <stop offset="100%" stopColor="#9A7420" stopOpacity="1"/>
+            </linearGradient>
+          </defs>
+          <path d="M865.17 2.4537C200 110 72 224 392 340C823.98 452.65 659.218 531.434 0.170378 576.454" stroke="url(#heroWaveFade)" strokeWidth="3"/>
+        </svg>
+
+        <div className="hero-text">
+          <h1 className="hero-headline">
+            {t.heroTitle1}{" "}
+            <span className="hero-gold-word">{t.heroGoldWord}</span>{" "}
+            {t.heroTitle2}
+          </h1>
+          <p className="hero-bio">{t.heroBio}</p>
+          <div className="hero-cta">
             <a
               href="https://wa.me/573507105388"
-              className="social-btn"
-              aria-label={t.whatsappLabel}
+              className="btn-book"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <WhatsAppIcon />
-              <span>+57 350 710 5388</span>
+              {t.bookBtn}
             </a>
-            <a
-              href="mailto:Stephannymoralesalvarez@gmail.com"
-              className="social-btn"
-              aria-label="Email"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m2 7 10 7 10-7" />
-              </svg>
-              <span>Stephannymoralesalvarez@gmail.com</span>
+            <a href="#gallery" className="btn-gallery">
+              {t.galleryBtn} →
             </a>
           </div>
+        </div>
 
-          <p className="location">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            </svg>
-            {t.location}
-          </p>
+        <div className="hero-image-wrap">
+          <img
+            src="/images/profilePic_transparent_bg.png"
+            alt="Stephanny Morales Alvarez"
+            className="hero-img"
+          />
+        </div>
+      </header>
 
-          <p className="bio">{t.bio}</p>
-        </header>
+      <ServicesSection t={t} />
 
-        <section className="services-section">
-          <button
-            className="service-btn"
-            onClick={() => setActiveModal(t.dental)}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M12 5.5c1.5-1.5 3-2 4.5-2 3.5 0 5 3 5 5.5 0 3-2 5-3 8.5-.5 1.5-1.5 2-2.5 2-1 0-2-.5-2.5-2-.5-1.5-.5-3-1.5-3s-1 1.5-1.5 3c-.5 1.5-1.5 2-2.5 2s-2-.5-2.5-2C5 13.5 3 11.5 3 8.5 3 6 4.5 3 8 3c1.5 0 3 .5 4.5 2z" />
-            </svg>
-            {t.dentalCardLabel}
-          </button>
-
-          <button
-            className="service-btn"
-            onClick={() => setActiveModal(t.medical)}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m18 2 4 4" />
-              <path d="m17 7 1-5" />
-              <path d="M3 22 8.5 16.5" />
-              <path d="m15 6-8.5 8.5-2.5 5 5-2.5L17.5 9" />
-              <path d="m5 16 3 3" />
-              <path d="m14 5 5 5" />
-            </svg>
-            {t.medicalCardLabel}
-          </button>
-        </section>
-
+      <section className="gallery-section" id="gallery">
+        <div className="gallery-header">
+          <span className="gallery-eyebrow">{t.patientGalleryLabel}</span>
+          <h2 className="gallery-heading">{t.patientGalleryTitle}</h2>
+        </div>
         <GalleryCarousel images={galleryImages} />
+      </section>
 
+      <section className="news-section-full">
+        <div className="news-header">
+          <span className="news-eyebrow">{t.newsEyebrow}</span>
+          <h2 className="news-heading">{t.newsHeading}</h2>
+        </div>
         {posts === null && (
-          <section className="news-section">
-            <h2 className="news-title">{t.newsTitle}</h2>
-            <div className="news-empty">
-              <div className="news-spinner" />
-            </div>
-          </section>
+          <div className="news-spinner-wrap">
+            <div className="news-spinner" />
+          </div>
         )}
         {posts !== null && (
-          <PostCarousel
-            posts={posts}
-            lang={lang}
-            title={t.newsTitle}
-            emptyText={t.newsEmpty}
-          />
+          <PostCarousel posts={posts} lang={lang} emptyText={t.newsEmpty} />
         )}
+      </section>
 
+      <div className="portfolio">
         <a
           href="https://wa.me/573507105388"
           className="appointment-btn"
@@ -538,10 +586,6 @@ function App() {
         </a>
       </div>
 
-      <ServiceModal
-        service={activeModal}
-        onClose={() => setActiveModal(null)}
-      />
     </>
   );
 }

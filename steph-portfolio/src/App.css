@@ -587,6 +587,12 @@
 
 .hero-gold-word {
   color: var(--gold);
+  text-decoration: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='14' preserveAspectRatio='none'%3E%3Cpath d='M0,7 C18,0 82,14 100,7' stroke='%23C9A55A' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: 72% 11px;
+  padding-bottom: 5px;
 }
 
 .hero-bio {
@@ -911,6 +917,94 @@
 }
 
 @media (max-width: 640px) {
+  /* ── Mobile Nav ─────────────────────────────────────── */
+  .top-nav {
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px 12px;
+  }
+
+  .top-nav-logo {
+    margin-left: 0;
+    padding: 0;
+  }
+
+  .nav-logo-img {
+    height: 72px;
+  }
+
+  .top-nav-right {
+    gap: 8px;
+  }
+
+  .hero-section {
+    margin-top: 148px;
+    padding: 60px 36px 0;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .hero-section::after {
+    display: none;
+  }
+
+  .hero-text {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(201, 165, 90, 0.2);
+  }
+
+  .hero-text::before {
+    display: none;
+  }
+
+  .hero-bio {
+    max-width: 100%;
+  }
+
+  .hero-cta {
+    justify-content: center;
+  }
+
+  .hero-image-wrap {
+    flex: none;
+    position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    align-self: auto;
+  }
+
+  .hero-img {
+    position: absolute;
+    height: 100%;
+    width: auto;
+    top: 0;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+    object-position: top center;
+  }
+
+  .hero-arc {
+    display: none;
+  }
+
+  .gallery-section,
+  .news-section-full,
+  .svc-section {
+    padding: 44px 24px 40px;
+  }
+
   .svc-section {
     padding: 44px 24px 40px;
   }
@@ -938,5 +1032,10 @@
   .svc-col:last-child .svc-list {
     padding-left: 0;
     padding-right: 0;
+  }
+
+  .svc-tagline {
+    font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+    padding: 0 12px;
   }
 }
